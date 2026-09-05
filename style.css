@@ -455,7 +455,7 @@ button {
   line-height: 1.08;
   letter-spacing: -0.03em;
   font-weight: 800;
-  color: rgb(0, 0, 100);
+  color: var(--hero-title-color);
   margin: 0 0 16px;
   animation: fadeInUp 0.5s 0.05s var(--ease) both;
 }
