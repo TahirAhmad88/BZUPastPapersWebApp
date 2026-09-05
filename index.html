@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>BZU Past Papers</title>
+    <meta
+      name="description"
+      content="A shared archive of past exam papers for every department at Bahauddin Zakariya University, Multan. Search, upload, and download in seconds."
+    />
+    <meta name="theme-color" content="#0070f3" />
+
+    <!-- This is for browser tab icon 📚-->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='2 0 130 125'><text y='.9em' font-size='90' font-weight='900'>AD</text></svg>"
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ============ Skip link (a11y) ============ -->
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- ============ Header ============ -->
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner">
+        <a class="brand" href="#top" aria-label="BZU Past Papers home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="26" height="26" fill="none">
+              <rect
+                x="4"
+                y="3"
+                width="20"
+                height="26"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M9 10h10M9 15h10M9 20h6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M24 8l4 4-4 16H8"
+                stroke="currentColor"
+                stroke-width="0"
+                opacity="0"
+              />
+            </svg>
+          </span>
+          <span class="brand-text"
+            >BZU<span class="brand-text-light"> Past Papers</span></span
+          >
+        </a>
+
+        <nav class="header-nav" aria-label="Primary">
+          <button class="nav-link" data-action="show-browse">Browse</button>
+          <button class="nav-link" data-action="show-favorites">
+            Favorites <span id="favCount" class="pill-count">0</span>
+          </button>
+          <button class="nav-link" data-action="open-upload">Upload</button>
+          <button class="nav-link" data-action="show-pending" hidden>
+            Pending
+            <span id="pendingCount" class="pill-count pill-count-warn">0</span>
+          </button>
+        </nav>
+
+        <div class="header-actions">
+          <button
+            class="icon-btn"
+            id="themeToggle"
+            aria-label="Toggle dark mode"
+            title="Toggle dark mode"
+          >
+            <svg
+              id="themeIconSun"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+              />
+            </svg>
+            <svg
+              id="themeIconMoon"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              style="display: none"
+            >
+              <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z" />
+            </svg>
+          </button>
+
+          <button
+            class="btn btn-ghost"
+            id="adminToggleBtn"
+            data-action="open-admin"
+          >
+            Admin
+          </button>
+          <div class="admin-chip" id="adminChip" hidden>
+            <span class="dot" aria-hidden="true"></span>
+            <span id="adminEmailLabel"></span>
+            <button class="link-btn" id="logoutBtn">Log out</button>
+          </div>
+        </div>
+
+        <button
+          class="mobile-menu-btn"
+          id="mobileMenuBtn"
+          aria-label="Open menu"
+          aria-expanded="false"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <nav class="mobile-nav" id="mobileNav" aria-label="Mobile">
+        <button class="nav-link" data-action="show-browse">Browse</button>
+        <button class="nav-link" data-action="show-favorites">
+          Favorites <span id="favCountMobile" class="pill-count">0</span>
+        </button>
+        <button class="nav-link" data-action="open-upload">
+          Upload a paper
+        </button>
+        <button class="nav-link" data-action="show-pending" hidden>
+          Pending review
+          <span id="pendingCountMobile" class="pill-count pill-count-warn"
+            >0</span
+          >
+        </button>
+        <button class="nav-link" data-action="open-admin">Admin</button>
+      </nav>
+    </header>
+
+    <main id="main">
+      <!-- ============ Hero ============ -->
+      <section class="hero" id="top">
+        <div class="hero-grid" aria-hidden="true"></div>
+        <div class="hero-inner">
+          <span class="eyebrow">Bahauddin Zakariya University · Multan</span>
+          <h1 class="hero-title">Every past paper your seniors saved you.</h1>
+          <p class="hero-sub">
+            One shared archive for every department — search by subject,
+            session, or semester, and download in one tap. Built by students,
+            kept alive by students.
+          </p>
+
+          <form class="hero-search" id="heroSearchForm" role="search">
+            <svg
+              class="hero-search-icon"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              type="text"
+              id="heroSearchInput"
+              placeholder="Search by subject, teacher, or keyword — try “Data Structures”"
+              autocomplete="off"
+            />
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+
+          <div class="hero-stats" id="heroStats">
+            <div class="stat">
+              <span class="stat-num" id="statTotalPapers">0</span>
+              <span class="stat-label">papers archived</span>
+            </div>
+            <div class="stat-divider" aria-hidden="true"></div>
+            <div class="stat">
+              <span class="stat-num" id="statTotalDownloads">0</span>
+              <span class="stat-label">downloads served</span>
+            </div>
+            <div class="stat-divider" aria-hidden="true"></div>
+            <div class="stat">
+              <span class="stat-num" id="statTotalSubjects">0</span>
+              <span class="stat-label">subjects covered</span>
+            </div>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" data-action="open-upload">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.4"
+              >
+                <path d="M12 19V5M5 12l7-7 7 7" />
+              </svg>
+              Upload a paper
+            </button>
+            <button
+              class="btn btn-secondary btn-lg"
+              data-action="scroll-browse"
+            >
+              Browse the archive
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Filters / Browse ============ -->
+      <section class="browse" id="browse">
+        <div class="section-inner">
+          <div class="browse-head">
+            <div>
+              <h2 class="section-title" id="resultsHeading">Browse papers</h2>
+              <p class="section-sub" id="resultsSummary">
+                Loading the archive…
+              </p>
+            </div>
+
+            <div class="sort-control">
+              <label for="sortSelect" class="sr-only">Sort by</label>
+              <select id="sortSelect">
+                <option value="latest">Latest first</option>
+                <option value="downloads">Most downloaded</option>
+                <option value="subject">Subject (A–Z)</option>
+                <option value="semester">Semester</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-bar" id="filterBar">
+            <div class="filter-field">
+              <label for="filterSubject">Subject</label>
+              <input
+                type="text"
+                id="filterSubject"
+                placeholder="Any subject"
+                list="subjectSuggestions"
+                autocomplete="off"
+              />
+              <datalist id="subjectSuggestions"></datalist>
+            </div>
+            <div class="filter-field">
+              <label for="filterSession">Session</label>
+              <input
+                type="text"
+                id="filterSession"
+                placeholder="e.g. 2024 or 2024-2028"
+                autocomplete="off"
+              />
+            </div>
+            <div class="filter-field">
+              <label for="filterSemester">Semester</label>
+              <select id="filterSemester">
+                <option value="">Any semester</option>
+                <option value="1">Semester 1</option>
+                <option value="2">Semester 2</option>
+                <option value="3">Semester 3</option>
+                <option value="4">Semester 4</option>
+                <option value="5">Semester 5</option>
+                <option value="6">Semester 6</option>
+                <option value="7">Semester 7</option>
+                <option value="8">Semester 8</option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <label for="filterTeacher">Teacher</label>
+              <input
+                type="text"
+                id="filterTeacher"
+                placeholder="Any teacher"
+                autocomplete="off"
+              />
+            </div>
+            <div class="filter-field">
+              <label for="filterTerm">Term</label>
+              <select id="filterTerm">
+                <option value="">Any term</option>
+                <option value="Mid">Mid</option>
+                <option value="Final">Final</option>
+              </select>
+            </div>
+            <button
+              class="btn btn-ghost filter-clear"
+              id="clearFiltersBtn"
+              type="button"
+            >
+              Clear filters
+            </button>
+          </div>
+
+          <!-- Batch action bar -->
+          <div class="batch-bar" id="batchBar" hidden>
+            <span><strong id="batchCount">0</strong> selected</span>
+            <div class="batch-actions">
+              <button class="btn btn-secondary btn-sm" id="batchShareBtn">
+                Compile &amp; download PDF
+              </button>
+              <button class="btn btn-ghost btn-sm" id="batchClearBtn">
+                Clear selection
+              </button>
+            </div>
+          </div>
+
+          <!-- Skeleton loader -->
+          <div class="paper-grid" id="skeletonGrid" aria-hidden="true">
+            <div class="paper-card skeleton"></div>
+            <div class="paper-card skeleton"></div>
+            <div class="paper-card skeleton"></div>
+            <div class="paper-card skeleton"></div>
+          </div>
+
+          <!-- Real results -->
+          <div class="paper-grid" id="paperGrid" hidden></div>
+
+          <!-- Empty state -->
+          <div class="empty-state" id="emptyState" hidden>
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path d="M9 12h6M9 16h6M9 8h1" />
+              <path
+                d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"
+              />
+              <path d="M14 3v5h5" />
+            </svg>
+            <h3>Nothing here yet</h3>
+            <p id="emptyStateMsg">
+              No papers match those filters. Be the first to upload one.
+            </p>
+            <button class="btn btn-primary" data-action="open-upload">
+              Upload a paper
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ============ Footer ============ -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-col footer-brand">
+          <span class="brand-text"
+            >BZU<span class="brand-text-light"> Past Papers</span></span
+          >
+          <p>
+            A community-maintained archive of past exam papers for Bahauddin
+            Zakariya University, Multan. Not an official university platform.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>About the owner</h4>
+          <ul class="footer-list">
+            <li>Tahir Ahmad Dawar</li>
+            <li>Computer Engineering Student</li>
+            <li>Session 2024–2028</li>
+            <li>Bahauddin Zakariya University, Multan</li>
+            <li>
+              Email:
+              <a href="mailto:tahirahmadhassukhel@gmail.com"
+                >tahirahmadhassukhel@gmail.com</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://www.linkedin.com/in/tahir-ahmad-68b96b361"
+                target="_blank"
+                rel="noopener"
+                >LinkedIn profile</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Archive</h4>
+          <ul class="footer-list">
+            <li>
+              <button class="link-btn" data-action="show-browse">
+                Browse papers
+              </button>
+            </li>
+            <li>
+              <button class="link-btn" data-action="open-upload">
+                Upload a paper
+              </button>
+            </li>
+            <li>
+              <button class="link-btn" data-action="show-favorites">
+                My favorites
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span
+          >&copy; <span id="footerYear"></span> BZU Past Papers. Built by a
+          student, for students.</span
+        >
+      </div>
+    </footer>
+
+    <!-- ============ Toast container ============ -->
+    <div
+      class="toast-container"
+      id="toastContainer"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <!-- ============ Upload Modal ============ -->
+    <div class="modal-overlay" id="uploadModalOverlay" hidden>
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="uploadModalTitle"
+      >
+        <div class="modal-head">
+          <h3 id="uploadModalTitle">Upload a paper</h3>
+          <button
+            class="modal-close"
+            data-close="uploadModalOverlay"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <form id="uploadForm" class="modal-body">
+          <div class="form-grid">
+            <div class="form-field span-2">
+              <label for="uSubject"
+                >Subject name <span class="req">*</span></label
+              >
+              <input
+                type="text"
+                id="uSubject"
+                required
+                placeholder="e.g. Data Structures &amp; Algorithms"
+              />
+            </div>
+            <div class="form-field">
+              <label for="uSession">Session <span class="req">*</span></label>
+              <input
+                type="text"
+                id="uSession"
+                required
+                placeholder="2024 or 2024-2028"
+              />
+            </div>
+            <div class="form-field">
+              <label for="uSemester">Semester <span class="req">*</span></label>
+              <select id="uSemester" required>
+                <option value="" disabled selected>Select…</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="uTeacher"
+                >Teacher <span class="optional">(optional)</span></label
+              >
+              <input
+                type="text"
+                id="uTeacher"
+                placeholder="e.g. Dr. Mudassir Khalil"
+              />
+            </div>
+            <div class="form-field">
+              <label for="uTerm"
+                >Term <span class="optional">(optional)</span></label
+              >
+              <select id="uTerm">
+                <option value="" selected>Not specified</option>
+                <option value="Mid">Mid</option>
+                <option value="Final">Final</option>
+              </select>
+            </div>
+            <div class="form-field span-2">
+              <label for="uKeywords"
+                >Keywords <span class="optional">(optional)</span></label
+              >
+              <input
+                type="text"
+                id="uKeywords"
+                placeholder="e.g. sorting, trees, past paper 2023"
+              />
+            </div>
+            <div class="form-field span-2">
+              <label>File <span class="req">*</span></label>
+              <div
+                class="dropzone"
+                id="dropzone"
+                tabindex="0"
+                role="button"
+                aria-label="Choose a file or drag and drop"
+              >
+                <input
+                  type="file"
+                  id="uFile"
+                  accept="application/pdf,image/png,image/jpeg"
+                  hidden
+                  required
+                />
+                <svg
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                >
+                  <path d="M12 16V4M7 9l5-5 5 5" />
+                  <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+                </svg>
+                <p>
+                  <strong>Drag &amp; drop</strong> a PDF, JPG, or PNG, or
+                  <span class="dz-browse">browse</span>
+                </p>
+                <p class="dz-filename" id="dzFilename"></p>
+              </div>
+            </div>
+          </div>
+
+          <p class="form-hint">
+            Your paper will be reviewed by an admin before it appears in the
+            public archive — this keeps the archive accurate and free of misuse.
+          </p>
+
+          <div class="upload-progress" id="uploadProgress" hidden>
+            <div class="upload-progress-bar" id="uploadProgressBar"></div>
+            <span id="uploadProgressLabel">Uploading… 0%</span>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-ghost"
+              data-close="uploadModalOverlay"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary" id="uploadSubmitBtn">
+              Submit for review
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============ Preview Modal ============ -->
+    <div class="modal-overlay" id="previewModalOverlay" hidden>
+      <div
+        class="modal modal-lg"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="previewModalTitle"
+      >
+        <div class="modal-head">
+          <h3 id="previewModalTitle">Preview</h3>
+          <button
+            class="modal-close"
+            data-close="previewModalOverlay"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="modal-body preview-body" id="previewBody">
+          <!-- iframe or img injected here -->
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="previewPrintBtn">Print</button>
+          <a class="btn btn-primary" id="previewDownloadBtn" download
+            >Download</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Admin Modal (login / panel) ============ -->
+    <div class="modal-overlay" id="adminModalOverlay" hidden>
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="adminModalTitle"
+      >
+        <div class="modal-head">
+          <h3 id="adminModalTitle">Admin sign in</h3>
+          <button
+            class="modal-close"
+            data-close="adminModalOverlay"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+
+        <!-- Login view -->
+        <form class="modal-body" id="adminLoginForm">
+          <div class="form-field">
+            <label for="adminEmail">Email</label>
+            <input
+              type="email"
+              id="adminEmail"
+              required
+              autocomplete="username"
+            />
+          </div>
+          <div class="form-field">
+            <label for="adminPassword">Password</label>
+            <input
+              type="password"
+              id="adminPassword"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+          <p class="form-hint">
+            Only registered admins can sign in here. Admins review and approve
+            new uploads before they're published, and can create other admin
+            accounts from this panel.
+          </p>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-ghost"
+              data-close="adminModalOverlay"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">Sign in</button>
+          </div>
+        </form>
+
+        <!-- Panel view (shown when logged in as primary admin) -->
+        <div class="modal-body" id="adminPanelView" hidden>
+          <p class="form-hint">
+            Signed in as <strong id="adminPanelEmail"></strong>.
+          </p>
+
+          <div id="createAdminSection" hidden>
+            <h4 class="panel-subhead">Create a new admin</h4>
+            <form id="createAdminForm">
+              <div class="form-grid">
+                <div class="form-field span-2">
+                  <label for="naName">Full name</label>
+                  <input type="text" id="naName" required />
+                </div>
+                <div class="form-field span-2">
+                  <label for="naEmail">Email</label>
+                  <input type="email" id="naEmail" required />
+                </div>
+                <div class="form-field">
+                  <label for="naPassword">Password</label>
+                  <input
+                    type="password"
+                    id="naPassword"
+                    required
+                    minlength="6"
+                  />
+                </div>
+                <div class="form-field">
+                  <label for="naPasswordConfirm">Confirm password</label>
+                  <input
+                    type="password"
+                    id="naPasswordConfirm"
+                    required
+                    minlength="6"
+                  />
+                </div>
+              </div>
+              <div class="modal-actions">
+                <button type="submit" class="btn btn-primary">
+                  Create admin account
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-ghost"
+              data-close="adminModalOverlay"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ Confirm Delete Modal ============ -->
+    <div class="modal-overlay" id="confirmModalOverlay" hidden>
+      <div
+        class="modal modal-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirmModalTitle"
+      >
+        <div class="modal-head">
+          <h3 id="confirmModalTitle">Delete this paper?</h3>
+          <button
+            class="modal-close"
+            data-close="confirmModalOverlay"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="confirmModalMsg">
+            This can't be undone. The file and its record will be permanently
+            removed.
+          </p>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" data-close="confirmModalOverlay">
+              Cancel
+            </button>
+            <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firebase SDK (modular, via CDN) -->
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
