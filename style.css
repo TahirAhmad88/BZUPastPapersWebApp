@@ -41,6 +41,7 @@
 
   --header-h: 68px;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
+     --hero-title-color: rgb(0, 0, 100);
 }
 
 [data-theme="dark"] {
@@ -293,7 +294,7 @@ button {
 .brand-text {
   font-weight: 900;
   font-size: 17px;
-  color: #0311a5;
+  color: var(--hero-title-color);
   letter-spacing: -0.02em;
 }
 
