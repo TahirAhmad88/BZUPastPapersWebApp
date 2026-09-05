@@ -1,117 +1,188 @@
-# BZU Past Papers — Setup & Deployment Guide (Supabase edition)
+# BZU Past Papers Web App
 
-A vanilla HTML/CSS/JS archive of past exam papers, backed by Supabase
-(Postgres + Storage + Auth). No build step, no server. Every upload
-now goes into a **pending review queue** — nothing appears in the
-public archive until an admin previews and approves it.
+> **The archive your seniors wished they had.** A community-powered platform where BZU students save, share, and access past exam papers across all departments.
 
-## Files
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge&logo=githubpages)](https://tahirahmad88.github.io/BZUPastPapersWebApp/)
+[![Supabase](https://img.shields.io/badge/Powered%20by-Supabase-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![Made with ❤️](https://img.shields.io/badge/Made%20with-%E2%9D%A4%EF%B8%8F-red?style=for-the-badge)](https://github.com/tahirahmad88/BZUPastPapersWebApp)
 
-| File                  | Purpose                                                                                         |
-| --------------------- | ----------------------------------------------------------------------------------------------- |
-| `index.html`          | Page structure                                                                                  |
-| `style.css`           | All styling, dark mode, animations, responsive layout                                           |
-| `app.js`              | App logic — Supabase calls, search, upload, review queue, admin, favorites                      |
-| `supabase-config.js`  | Your Supabase project URL/key go here                                                           |
-| `supabase-schema.sql` | Run once in the Supabase SQL editor — creates tables, storage bucket, and all security policies |
+---
 
-## 1. Create the Supabase project
+## Why This Exists
 
-1. Go to [supabase.com/dashboard](https://supabase.com/dashboard) → **New project**. Pick a name, a database password (save it somewhere — you won't need it for this app, but Supabase asks for it), and a region close to Pakistan (e.g. Singapore).
-2. Once it's finished provisioning: **Project Settings → API**. Copy the **Project URL** and the **anon public** key into `supabase-config.js`, replacing the placeholders.
+Every BZU student knows the struggle—hunting for past papers, asking seniors, searching through messy WhatsApp groups. **This platform ends that.**
 
-## 2. Run the schema
+**One place. Every paper. Zero hassle.**
 
-1. In the dashboard sidebar: **SQL Editor → New query**.
-2. Paste in the entire contents of `supabase-schema.sql` from this project and click **Run**.
-3. This creates:
-   - a `papers` table with a `status` column (`pending` / `approved` / `rejected`) and Row Level Security policies
-   - an `admins` table, so only the primary admin can register new admins
-   - a `papers` Storage bucket (public read, so anyone with a file's link can view it — write/delete access is controlled by policy)
-   - an `increment_download_count()` function that lets any visitor bump a paper's download counter by exactly one, without giving them general write access
+Built by a BZU student, for BZU students. Because your seniors saved you, now you save the next batch.
 
-## 3. Create the primary admin account
+---
 
-1. **Authentication → Users → Add user → Create new user**.
-2. Email: `tahir@admin.com`. Set a password of your choice.
-3. **Authentication → Providers → Email**: if you want admins to be able to sign in immediately after being created (rather than confirming an email first), you can turn off **Confirm email** here. This is a project-wide setting — reasonable for a small admin team, but be aware it applies to any account created via sign-up, not just admins.
+## Features That Matter
 
-**Why isn't the admin password hardcoded anywhere in the app?**
-Anything shipped in client-side JavaScript is visible to anyone who
-opens dev tools, so a password sitting in `app.js` wouldn't be a
-secret. Creating the account directly in Supabase means the password
-is only ever known to Supabase's Auth system and to you. The rule
-that "only `tahir@admin.com` can create other admins" is still
-enforced — it lives in `supabase-schema.sql`'s Row Level Security
-policy on the `admins` table, on the database side, where it can't be
-bypassed by editing the page's JavaScript.
+| Feature | What It Does |
+|---------|--------------|
+| 🔍 **Smart Search** | Find papers by subject, teacher, session, semester in seconds, or keyworks |
+| 📤 **Community Uploads** | Any student can contribute—your paper helps hundreds |
+| ✅ **Quality Control** | Papers reviewed by admins before going live |
+| ⭐ **Favorites** | Save papers for quick access during exam prep |
+| 📦 **Batch Download** | Select multiple papers → compile into one PDF |
+| 🌙 **Dark Mode** | Study late without eye strain |
+| 📊 **Live Stats** | See total papers, downloads, and subjects covered |
+| 🔐 **Secure** | Row Level Security (RLS) protects data integrity |
 
-## 4. How the approval workflow works
+---
 
-- A visitor uploads a paper → it's inserted with `status = 'pending'`. It is **not visible** in the public archive (enforced by the `papers` table's RLS policy, not just hidden in the UI).
-- Any signed-in admin sees a **Pending** link in the header (with a live count) that any admin who isn't currently logged in never sees.
-- The pending queue shows each paper's metadata plus **Preview**, **Reject**, and **Approve** buttons. Preview opens the actual file (PDF or image) in a modal so the admin can check it before deciding — the modal also carries its own Approve/Reject buttons.
-- **Approve** sets `status = 'approved'`, and records who approved it and when — the paper immediately becomes visible to everyone.
-- **Reject** deletes the paper's record and its file from storage. There's no "rejected" holding area in the UI — a rejected upload is gone, and the uploader is welcome to fix and resubmit it (the duplicate check only blocks against papers that are pending or approved, not rejected ones).
-- Any admin can approve or reject — this isn't restricted to the primary admin, only _creating new admin accounts_ is.
+## Live Demo
 
-One known trade-off, worth knowing about: the Storage bucket is
-public for simplicity (so approved papers get plain, fast URLs with
-no extra request needed). That means someone who already has the
-direct file URL for a _pending_ paper (e.g. they uploaded it
-themselves) could still open that specific file, even though it
-won't show up anywhere in the archive or search results until
-approved. If you want pending files fully inaccessible until
-approval, that requires switching to a private bucket with
-short-lived signed URLs generated only for admins — a reasonable
-follow-up if this matters for your use case, just outside a
-no-backend, static-hosting setup.
+** [BZUPastPapersWebApp](https://tahirahmad88.github.io/BZUPastPapersWebApp/)**
 
-## 5. Run it locally
+Go ahead—search, browse, and see how it works. No login required to explore the archive.
 
-Because the app uses ES module imports (`type="module"`), opening
-`index.html` directly with `file://` won't work in most browsers — it
-needs to be served over `http://`. Any static server works:
+---
 
-```bash
-# Python (already on most systems)
-python3 -m http.server 8080
+## Tech Stack
 
-# or Node
-npx serve .
+```mermaid
+graph LR
+    A[Vanilla JS] --> B[Supabase]
+    C[HTML5/CSS3] --> B
+    B --> D[PostgreSQL]
+    B --> E[Storage]
+    B --> F[Auth]
+    A --> G[pdf-lib]
+    C --> H[Google Fonts]
 ```
 
-Then visit `http://localhost:8080`.
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Vanilla JavaScript, HTML5, CSS3 (no frameworks, no bloat) |
+| **Backend** | Supabase (PostgreSQL + Storage + Authentication) |
+| **PDF Processing** | pdf-lib for compiling multiple papers |
+| **Hosting** | GitHub Pages (static, fast, free) |
+| **Fonts** | Inter + JetBrains Mono from Google Fonts |
 
-## 6. Deploy for free
+---
 
-**Option A — GitHub Pages**
+## How It Works
 
-1. Push this folder to a GitHub repository.
-2. Repo → **Settings → Pages** → Source: deploy from the `main` branch, root folder.
-3. Your site will be live at `https://<username>.github.io/<repo>/` within a minute or two.
+```mermaid
+flowchart TD
+    A[Student uploads paper] --> B{Pending Review}
+    B --> C[Admin previews]
+    C --> D{Approve or Reject?}
+    D -->|Approve| E[Paper goes live]
+    D -->|Reject| F[Paper removed]
+    E --> G[Students search & download]
+    G --> H[Archive grows]
+    H --> A
+```
 
-**Option B — Vercel**
+1. **Any student** can upload a past paper (PDF, JPG, or PNG)
+2. **Papers go to pending review**—no spam, no duplicates
+3. **Admins preview** the actual file before approving
+4. **Once approved**, it's instantly visible to everyone
+5. **Community grows**—more papers, more help for everyone
 
-1. Go to [vercel.com](https://vercel.com) → **Add New Project** → import your GitHub repo.
-2. Framework preset: **Other** (no build command needed — it's static files).
-3. Deploy. You'll get a `https://<project>.vercel.app` URL.
+---
 
-Supabase's anon key doesn't need the same "restrict by domain" step
-Firebase does — access is controlled entirely by the Row Level
-Security policies in `supabase-schema.sql`, which apply no matter
-where a request comes from.
+## Key Design Decisions
 
-## 7. Try it out
+| Decision | Why |
+|----------|-----|
+| **No build step** | Anyone can fork and run it instantly |
+| **Vanilla JS** | No framework churn—works forever |
+| **Supabase RLS** | Security enforced at database level, not just UI |
+| **Public bucket** | Fast downloads, no signed URL overhead |
+| **Admin review** | Keeps archive accurate and trustworthy |
+| **Dark mode** | Default on—students study at night |
 
-- Browse and upload as a regular (signed-out) visitor — no login needed. Your upload will say it's pending review.
-- Click **Admin** in the header, sign in with `tahir@admin.com` and the password you set in step 3.
-- With an admin session active, a **Pending** link appears in the header — open it, preview the paper you just uploaded, and approve it. It'll now show up in **Browse**.
-- From the admin panel (click **Admin** again while signed in), the primary admin sees a **Create a new admin** form. Accounts created there can sign in, and can approve/reject/delete papers, but can't create further admins — only `tahir@admin.com` can, enforced in the database.
+---
 
-## What to customize later
+## For Developers
 
-- **Departments/subjects list** — subjects are free text with autocomplete built from already-approved uploads; swap in a fixed dropdown of BZU's official subject list if you'd prefer.
-- **File size limit** — currently 20MB per file (`MAX_FILE_MB` in `app.js`). Raise it if needed; there's no matching Storage-side limit to update since Supabase doesn't enforce per-file size via RLS the way Firebase does — consider adding one via a Storage bucket file-size limit in the dashboard if this matters to you.
-- **Private pending files** — see the trade-off noted in section 4.
-- **OCR / full-text search** — outside the "no backend" scope of this build, since it needs a server-side step (e.g. a Supabase Edge Function calling an OCR API on upload). Flag it if you want a follow-up.
+### Run Locally
+
+```bash
+# Clone the repo
+git clone https://github.com/tahirahmad88/BZUPastPapersWebApp.git
+
+# Serve locally (Python)
+python3 -m http.server 8080
+
+# Or with Node
+npx serve .
+
+# Visit http://localhost:8080
+```
+
+### Project Structure
+
+```
+BZUPastPapersWebApp/
+├── index.html          # Main page
+├── style.css           # All styles + dark mode
+├── app.js              # Full app logic
+├── supabase-config.js  # Your Supabase credentials
+└── supabase-schema.sql # Database schema + RLS policies
+```
+
+### Setup Supabase
+
+1. Create a Supabase project
+2. Run `supabase-schema.sql` in the SQL editor
+3. Create admin user in Authentication
+4. Update `supabase-config.js` with your credentials
+5. Deploy to GitHub Pages
+
+---
+
+## About the Creator
+
+**Tahir Ahmad Dawar**  
+Computer Engineering Student, Session 2024–2028  
+Bahauddin Zakariya University, Multan
+
+- 📧 **Email**: [tahirahmadhassukhel@gmail.com](mailto:tahirahmadhassukhel@gmail.com)
+- 🔗 **LinkedIn**: [Tahir Ahmad](https://www.linkedin.com/in/tahir-ahmad-68b96b361)
+- 🌐 **GitHub**: [tahirahmad88](https://github.com/tahirahmad88)
+
+---
+
+## Contributing
+
+### For Students
+-  **Upload papers**—every contribution helps
+-  **Share with your batch**—the more papers, the better
+-  **Star the repo**—show your support
+
+### For Developers
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing`)
+5. Open a Pull Request
+
+---
+
+## License
+
+This project is [MIT licensed](LICENSE)—free for anyone to use, modify, and improve.
+
+---
+
+## Acknowledgments
+
+- The BZU community for submitting papers
+- Supabase for an incredible platform
+- Every student who has ever shared a past paper with a junior
+
+---
+
+<div align="center">
+
+**⭐ If this project helped you, please give it a star! ⭐**
+
+**Your contribution today = someone's success tomorrow.**
+
+</div>
